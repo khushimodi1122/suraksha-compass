@@ -2,7 +2,7 @@
 
 A cross-platform web app that suggests a life insurance policy type to customers in India, based on a 37-question profile. All amounts are in INR with Indian grouping (₹12,00,000, lakh and crore).
 
-**Live site:** https://gandhi56.github.io/suraksha-compass/
+**Live site:** https://khushimodi1122.github.io/suraksha-compass/
 
 ## Run it
 
