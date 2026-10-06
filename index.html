@@ -290,69 +290,42 @@ const KEYS = Object.keys(POLICIES);
 ---------------------------------------------------------------- */
 const o = (v, l) => ({ v, l });
 const SECTIONS = [
-  { id: "personal", icon: "👤", title: "Personal information", blurb: "A few basics about you. Age has the biggest effect on what cover costs.", qs: [
+  { id: "you", icon: "👤", title: "About you", blurb: "Age, income and health have the biggest effect on what cover you need and what it costs.", caution: "Health answers only shape a preliminary suggestion. The insurer decides whether to offer cover, and at what premium, after its own medical underwriting. Always disclose your health details fully on the proposal form; non-disclosure can lead to a claim being rejected.", qs: [
     { id: "age", type: "single", label: "What is your age?", options: [o("lt25","Below 25"),o("25_35","25–35"),o("36_45","36–45"),o("46_55","46–55"),o("gt55","Above 55")] },
-    { id: "gender", type: "single", label: "What is your gender?", hint: "Insurers in India often price term cover slightly lower for women.", options: [o("male","Male"),o("female","Female"),o("other","Other"),o("na","Prefer not to say")] },
-    { id: "marital", type: "single", label: "What is your marital status?", options: [o("single","Single"),o("married","Married"),o("married_kids","Married with children"),o("other","Other")] },
     { id: "occupation", type: "single", label: "What is your occupation?", options: [o("salaried","Salaried"),o("self","Self-employed"),o("business","Business owner"),o("student","Student"),o("retired","Retired"),o("other","Other")] },
-    { id: "city", type: "single", label: "Where do you live?", hint: "Used to estimate future education and marriage costs.", options: [o("metro","Metro city"),o("tier2","Tier-2 city"),o("tier3","Tier-3 city / town"),o("rural","Rural area")] }
-  ]},
-  { id: "income", icon: "💰", title: "Income & financial situation", blurb: "Your income sets how much cover your family would need, and how much insurers will allow.", qs: [
     { id: "income", type: "income", label: "What is your monthly or annual income?", hint: "Take-home or gross, whichever you know better." },
     { id: "stability", type: "single", label: "How stable is your income?", options: [o("very","Very stable"),o("stable","Stable"),o("variable","Variable"),o("uncertain","Uncertain")] },
-    { id: "savings", type: "single", label: "How much do you currently save every month?", options: [o("lt5","Less than ₹5,000"),o("5_15","₹5,000–₹15,000"),o("15_30","₹15,000–₹30,000"),o("gt30","Above ₹30,000")] },
-    { id: "investments", type: "money", label: "Roughly how much do you have in savings and investments today?", hint: "FDs, PPF, EPF, mutual funds, shares, gold. Your family could use these, so they reduce the cover you need." },
-    { id: "hasLife", type: "single", label: "Do you currently have any life insurance?", options: [o("yes","Yes"),o("no","No")] },
-    { id: "lifeCover", type: "money", label: "If yes, approximately how much life cover do you currently have?", hint: "Add up the sum assured across all policies, including employer group cover.", showIf: a => a.hasLife === "yes" }
+    { id: "healthCond", type: "single", label: "Do you have a major health condition or a history of serious illness?", options: [o("yes","Yes"),o("no","No"),o("na","Prefer not to say")] },
+    { id: "tobacco", type: "single", label: "Do you smoke or use tobacco?", options: [o("yes","Yes"),o("no","No")] }
   ]},
-  { id: "family", icon: "👨‍👩‍👧", title: "Family & dependents", blurb: "Family responsibilities are one of the main factors in choosing the right policy.", qs: [
+  { id: "family", icon: "👨‍👩‍👧", title: "Family", blurb: "Family responsibilities are one of the main factors in choosing the right policy.", qs: [
     { id: "depCount", type: "single", label: "How many family members financially depend on your income?", options: [o("0","0"),o("1","1"),o("2","2"),o("3","3"),o("4p","4+")] },
-    { id: "dependents", type: "multi", label: "Who depends on your income?", hint: "Select all that apply.", showIf: a => a.depCount && a.depCount !== "0", options: [o("spouse","Spouse"),o("children","Children"),o("parents","Parents"),o("others","Other family members")] },
-    { id: "hasKids", type: "single", label: "Do you have children?", options: [o("yes","Yes"),o("no","No")] },
-    { id: "kidsCount", type: "count", label: "If yes, how many children do you have?", showIf: a => a.hasKids === "yes" },
+    { id: "kidsCount", type: "single", label: "How many children do you have?", options: [o("0","None"),o("1","1"),o("2","2"),o("3","3"),o("4p","4+")] },
     { id: "responsibilities", type: "multi", label: "Do you have any major future responsibilities for your family?", hint: "Select all that apply.", options: [o("education","Children's education"),o("marriage","Marriage expenses"),o("parents","Parents' expenses"),o("home","Home purchase"),o("other","Other")] }
   ]},
-  { id: "loans", icon: "🏦", title: "Loans & liabilities", blurb: "Unpaid loans pass to your family. Cover should be large enough to clear them.", qs: [
+  { id: "cover", icon: "🏦", title: "Loans & existing cover", blurb: "Unpaid loans pass to your family, and existing cover reduces what you still need.", qs: [
+    { id: "hasLife", type: "single", label: "Do you currently have any life insurance?", options: [o("yes","Yes"),o("no","No")] },
+    { id: "lifeCover", type: "money", label: "Approximately how much life cover do you have?", hint: "Add up the sum assured across all policies, including employer group cover.", showIf: a => a.hasLife === "yes" },
     { id: "hasLoan", type: "single", label: "Do you currently have any loans?", options: [o("yes","Yes"),o("no","No")] },
-    { id: "loanTypes", type: "multi", label: "What type of loan do you have?", hint: "Select all that apply.", showIf: a => a.hasLoan === "yes", options: [o("home","Home loan"),o("education","Education loan"),o("personal","Personal loan"),o("car","Car loan"),o("business","Business loan"),o("other","Other")] },
     { id: "loanAmount", type: "money", label: "What is your total outstanding loan amount?", showIf: a => a.hasLoan === "yes" },
-    { id: "emi", type: "money", label: "What is your approximate monthly EMI?", showIf: a => a.hasLoan === "yes" },
     { id: "canRepay", type: "single", label: "If something happens to you, would your family be able to repay these loans without your income?", showIf: a => a.hasLoan === "yes", options: [o("yes","Yes"),o("no","No"),o("unsure","Not sure")] }
   ]},
-  { id: "health", icon: "🏥", title: "Health & lifestyle", blurb: "These answers help estimate premiums and suggest riders.", caution: "This is only a preliminary suggestion. The insurer decides whether to offer cover, and at what premium, after its own medical underwriting. Always disclose your health details fully on the proposal form; non-disclosure can lead to a claim being rejected.", qs: [
-    { id: "healthCond", type: "single", label: "Do you currently have any major health condition?", options: [o("yes","Yes"),o("no","No"),o("na","Prefer not to say")] },
-    { id: "illness", type: "single", label: "Do you have any history of serious illness?", options: [o("yes","Yes"),o("no","No")] },
-    { id: "familyHistory", type: "single", label: "Has a parent or sibling had heart disease, cancer, stroke or diabetes before age 60?", options: [o("yes","Yes"),o("no","No"),o("unsure","Not sure")] },
-    { id: "tobacco", type: "single", label: "Do you smoke or use tobacco?", options: [o("yes","Yes"),o("no","No")] },
-    { id: "alcohol", type: "single", label: "Do you consume alcohol?", options: [o("never","Never"),o("occasionally","Occasionally"),o("frequently","Frequently")] },
-    { id: "health", type: "single", label: "How would you describe your overall health?", options: [o("excellent","Excellent"),o("good","Good"),o("average","Average"),o("poor","Poor")] },
-    { id: "healthIns", type: "single", label: "Do you have health insurance?", hint: "Life insurance does not pay hospital bills. A health policy is a separate need.", options: [o("yes","Yes, my own policy"),o("employer","Only through my employer"),o("no","No")] }
-  ]},
-  { id: "goals", icon: "🎯", title: "Financial goals", blurb: "What you want the policy to do decides between pure protection and a savings plan.", qs: [
+  { id: "goals", icon: "🎯", title: "Goals & budget", blurb: "What you want the policy to do, and what you can keep paying, decide between pure protection and a savings plan.", qs: [
     { id: "reason", type: "multi", label: "What is your main reason for buying life insurance?", hint: "Pick up to three.", max: 3, options: [o("protection","Family financial protection"),o("education","Children's education"),o("marriage","Children's marriage"),o("retirement","Retirement planning"),o("savings","Savings"),o("investment","Investment"),o("wealth","Wealth creation"),o("loan","Loan protection")] },
     { id: "productType", type: "single", label: "Do you want only life protection or protection + savings/investment?", options: [o("protection","Only protection"),o("prot_savings","Protection + savings"),o("prot_invest","Protection + investment"),o("unsure","Not sure")] },
     { id: "risk", type: "single", label: "What is your investment risk preference?", options: [o("low","Low risk"),o("moderate","Moderate risk"),o("high","High risk"),o("unsure","I don't understand investment risk")] },
     { id: "duration", type: "single", label: "What is your expected policy duration?", options: [o("10","10 years"),o("15","15 years"),o("20","20 years"),o("25p","25+ years"),o("unsure","Not sure")] },
-    { id: "retireAge", type: "single", label: "At what age do you plan to stop working?", hint: "Cover is usually needed until your income stops.", options: [o("55","55"),o("60","60"),o("65","65"),o("none","No plan yet")] },
-    { id: "tax", type: "single", label: "Is saving income tax on premiums important to you?", hint: "Section 80C deductions apply only under the old tax regime.", options: [o("yes","Yes"),o("no","No"),o("unsure","Not sure")] }
-  ]},
-  { id: "budget", icon: "💳", title: "Premium budget", blurb: "A policy only works if you can keep paying for it every year.", qs: [
     { id: "budget", type: "single", label: "How much can you comfortably spend on insurance per year?", options: [o("lt10k","Below ₹10,000"),o("10_25k","₹10,000–₹25,000"),o("25_50k","₹25,000–₹50,000"),o("50k_1l","₹50,000–₹1 lakh"),o("gt1l","Above ₹1 lakh")] },
-    { id: "pref", type: "single", label: "Would you prefer:", options: [o("lowest","Lowest possible premium"),o("balanced","Balanced premium and benefits"),o("higher","Higher premium for additional benefits")] },
-    { id: "payFreq", type: "single", label: "How would you like to pay premiums?", options: [o("monthly","Monthly"),o("quarterly","Quarterly"),o("half","Half-yearly"),o("annual","Yearly"),o("single","One-time (single premium)")] }
+    { id: "pref", type: "single", label: "Would you prefer:", options: [o("lowest","Lowest possible premium"),o("balanced","Balanced premium and benefits"),o("higher","Higher premium for additional benefits")] }
   ]}
-];
-let qNo = 0; SECTIONS.forEach(s => s.qs.forEach(q => { q.no = ++qNo; }));
+];let qNo = 0; SECTIONS.forEach(s => s.qs.forEach(q => { q.no = ++qNo; }));
 
 const SAMPLE = {
-  age: "25_35", gender: "female", marital: "married_kids", occupation: "salaried", city: "metro",
-  income: { amount: 100000, period: "monthly" }, stability: "stable", savings: "15_30", investments: 600000,
-  hasLife: "yes", lifeCover: 2500000, depCount: "3", dependents: ["spouse", "children", "parents"],
-  hasKids: "yes", kidsCount: 2, responsibilities: ["education", "marriage", "parents"],
-  hasLoan: "yes", loanTypes: ["home"], loanAmount: 3500000, emi: 32000, canRepay: "no",
-  healthCond: "no", illness: "no", familyHistory: "yes", tobacco: "no", alcohol: "occasionally", health: "good", healthIns: "employer",
-  reason: ["protection", "education"], productType: "prot_savings", risk: "low", duration: "20", retireAge: "60", tax: "unsure",
-  budget: "25_50k", pref: "balanced", payFreq: "monthly"
+  age: "25_35", occupation: "salaried", income: { amount: 100000, period: "monthly" }, stability: "stable",
+  healthCond: "no", tobacco: "no", depCount: "3", kidsCount: "2", responsibilities: ["education", "marriage", "parents"],
+  hasLife: "yes", lifeCover: 2500000, hasLoan: "yes", loanAmount: 3500000, canRepay: "no",
+  reason: ["protection", "education"], productType: "prot_savings", risk: "low", duration: "20",
+  budget: "50k_1l", pref: "balanced"
 };
 
 /* ---------------------------------------------------------------
@@ -361,7 +334,7 @@ const SAMPLE = {
 ---------------------------------------------------------------- */
 const WB_SNAPSHOT = {
   mode: "snap", fetched: "6 Oct 2026",
-  leTotal: { v: 72.235, y: "2024" }, leMale: { v: 70.729, y: "2024" }, leFemale: { v: 73.856, y: "2024" },
+  leTotal: { v: 72.235, y: "2024" },
   inflation: { v: 4.966, from: "2021", to: "2025", latest: { v: 2.399, y: "2025" } },
   lending: { v: 8.567, y: "2022" }
 };
@@ -392,14 +365,12 @@ async function wb(ind, n) {
 }
 async function loadData() {
   try {
-    const [lt, lm, lf, inf, lend] = await Promise.all([
-      wb("SP.DYN.LE00.IN", 3), wb("SP.DYN.LE00.MA.IN", 3), wb("SP.DYN.LE00.FE.IN", 3), wb("FP.CPI.TOTL.ZG", 6), wb("FR.INR.LEND", 6)
-    ]);
+    const [lt, inf, lend] = await Promise.all([wb("SP.DYN.LE00.IN", 3), wb("FP.CPI.TOTL.ZG", 6), wb("FR.INR.LEND", 6)]);
     if (!lt.length || !inf.length) throw new Error("empty");
     const inf5 = inf.slice(0, 5);
     D = {
       mode: "live", fetched: new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
-      leTotal: lt[0], leMale: lm[0] || lt[0], leFemale: lf[0] || lt[0],
+      leTotal: lt[0],
       inflation: { v: inf5.reduce((s, x) => s + x.v, 0) / inf5.length, from: inf5[inf5.length - 1].y, to: inf5[0].y, latest: inf5[0] },
       lending: lend[0] || WB_SNAPSHOT.lending
     };
@@ -446,8 +417,10 @@ const THUMB = { lt25: 20, "25_35": 20, "36_45": 15, "46_55": 10, gt55: 5 };
 const has = (arr, v) => Array.isArray(arr) && arr.includes(v);
 const annualIncome = a => a.income && a.income.amount > 0 ? (a.income.period === "monthly" ? a.income.amount * 12 : a.income.amount) : 0;
 const depNum = a => a.depCount ? (a.depCount === "4p" ? 4 : +a.depCount) : 0;
-const retireAt = a => a.retireAge && a.retireAge !== "none" ? +a.retireAge : 60;
-const lifeExp = a => (a.gender === "male" ? D.leMale : a.gender === "female" ? D.leFemale : D.leTotal);
+const RETIRE_AGE = 60;
+const retireAt = () => RETIRE_AGE;
+const kidsNum = a => a.kidsCount ? (a.kidsCount === "4p" ? 4 : +a.kidsCount) : 0;
+const lifeExp = () => D.leTotal;
 function pvGrowing(p, g, r, n) { if (n <= 0) return 0; if (Math.abs(r - g) < 1e-6) return p * n / (1 + r); return p * (1 - Math.pow((1 + g) / (1 + r), n)) / (r - g); }
 function termYears(a) {
   const age = AGE_MID[a.age] || 30;
@@ -459,17 +432,17 @@ function termYears(a) {
 
 function coverNeed(a) {
   const inc = annualIncome(a), age = AGE_MID[a.age] || 30, deps = depNum(a);
-  const g = D.inflation.v / 100, r = ASSUMED_RETURN, city = a.city || "tier2";
+  const g = D.inflation.v / 100, r = ASSUMED_RETURN, city = "tier2";  // cost assumptions use a tier-2 city
   const rows = [];
   const yrsToRetire = a.occupation === "retired" ? 0 : Math.max(0, retireAt(a) - age);
   if (deps > 0 && inc > 0 && yrsToRetire > 0) {
     rows.push({ k: `Replace 70% of your income for ${yrsToRetire} years, rising with inflation`, v: pvGrowing(inc * 0.7, g, r, yrsToRetire) });
   }
   if (a.hasLoan === "yes" && a.canRepay !== "yes") {
-    const loan = a.loanAmount > 0 ? a.loanAmount : (a.emi > 0 ? a.emi * 100 : 0);
+    const loan = a.loanAmount > 0 ? a.loanAmount : 0;
     if (loan) rows.push({ k: "Clear outstanding loans", v: loan });
   }
-  const kids = a.hasKids === "yes" ? Math.max(1, +a.kidsCount || 1) : 0;
+  const kids = kidsNum(a);
   const childAge = Math.max(1, Math.min(17, age - 28));
   const resp = a.responsibilities || [], why = a.reason || [];
   if (kids && (has(resp, "education") || has(why, "education"))) {
@@ -480,7 +453,7 @@ function coverNeed(a) {
     const yrs = Math.max(1, 27 - childAge);
     rows.push({ k: `Marriage for ${kids} child${kids > 1 ? "ren" : ""} (today ${inrShort(COSTS.marriage[city])} each)`, v: kids * COSTS.marriage[city] * Math.pow((1 + g) / (1 + r), yrs) });
   }
-  if (has(resp, "parents") || has(a.dependents, "parents")) {
+  if (has(resp, "parents")) {
     rows.push({ k: `Support parents for 15 years (${inrShort(COSTS.parents[city])} a year today)`, v: pvGrowing(COSTS.parents[city], g, r, 15) });
   }
   if (deps > 0 && inc > 0) rows.push({ k: "Emergency fund (6 months of income)", v: inc / 2 });
@@ -488,7 +461,6 @@ function coverNeed(a) {
   const gross = rows.reduce((s, x) => s + x.v, 0);
   const minus = [];
   if (a.hasLife === "yes" && a.lifeCover > 0) minus.push({ k: "Existing life cover", v: a.lifeCover });
-  if (a.investments > 0) minus.push({ k: "Existing savings and investments", v: a.investments });
   const net = Math.max(0, gross - minus.reduce((s, x) => s + x.v, 0));
   const rounded = net > 0 ? Math.ceil(net / 500000) * 500000 : 0;
   const cap = inc > 0 ? inc * (INCOME_CAP[a.age] || 20) : 0;
@@ -498,10 +470,8 @@ function coverNeed(a) {
 function premiums(a, sumAssured) {
   const ageK = a.age || "25_35";
   let load = 1;
-  if (a.gender === "female") load *= 0.85;
   if (a.tobacco === "yes") load *= 1.7;
-  if (a.healthCond === "yes" || a.illness === "yes" || a.health === "poor") load *= 1.3;
-  else if (a.health === "average" || a.alcohol === "frequently") load *= 1.1;
+  if (a.healthCond === "yes") load *= 1.3;
   const years = termYears(a);
   const T = Math.min(years, 25);                         // savings plans rarely exceed 25 years
   const ageAdd = { lt25: 0, "25_35": 0.02, "36_45": 0.05, "46_55": 0.1, gt55: 0.18 }[ageK];
@@ -531,7 +501,7 @@ function analyse(a) {
   if (deps >= 2) add("term", 3, `${a.depCount === "4p" ? "Four or more" : deps} people depend on your income, so the size of the cover matters most. Term gives the most cover per rupee.`);
   else if (deps === 1) add("term", 2, "Someone depends on your income, so a large, low-cost cover protects them.");
   else if (a.depCount === "0") { add("term", -1, "No one depends on your income yet, so a large death benefit is less urgent."); add("endow", 1, "With no dependents, building savings can matter as much as protection."); }
-  if (a.marital === "married_kids" || a.hasKids === "yes") add("term", 1);
+  if (kidsNum(a) > 0) add("term", 1);
 
   // Loans
   if (a.hasLoan === "yes") {
@@ -577,8 +547,6 @@ function analyse(a) {
     add("whole", -2, "Whole life premiums are high and run for many years, so uneven income raises the risk of a lapse.");
   }
   if (a.stability === "very" || a.stability === "stable") { add("endow", 1, "Stable income makes it easier to keep up a savings plan's higher premiums."); add("whole", 1); add("moneyback", 1); }
-  if (a.savings === "lt5") { add("term", 1); add("endow", -1); add("whole", -1); }
-  if (a.savings === "gt30") { add("whole", 1); add("endow", 1); }
 
   // Budget & preference
   if (a.budget === "lt10k") { add("term", 3, "With under ₹10,000 a year, term insurance is the only option that buys meaningful cover."); ["endow", "moneyback", "whole"].forEach(k => add(k, -3, "A budget under ₹10,000 a year buys only a small sum assured in this plan.")); }
@@ -593,9 +561,6 @@ function analyse(a) {
   if (a.occupation === "retired") { add("term", -2, "Without earned income, there is little income to replace, which is the main purpose of term cover."); add("whole", 2, "A whole life plan can pass money to your heirs and cover final expenses."); }
   if (a.occupation === "self" || a.occupation === "business") add("term", 1, "Without employer group cover, a personal term plan is your family's main safety net.");
 
-  // Tax & payment mode
-  if (a.tax === "yes") { add("endow", 1, "Premiums can be deducted under Section 80C (old tax regime), and maturity may be tax-free under Section 10(10D) if conditions are met."); add("moneyback", 1); add("whole", 1); add("term", 1); }
-  if (a.payFreq === "single") { add("endow", 1, "Single-premium endowment and whole life plans are widely available."); add("whole", 1); }
 
   // Open data: life expectancy (World Bank)
   const le = lifeExp(a), endAge = age + termYears(a);
@@ -605,7 +570,7 @@ function analyse(a) {
 
   // Health: informs premiums and riders, never eligibility
   if (a.tobacco === "yes") S.term.watch.push("Tobacco use typically raises term premiums by 50–80%. Declare it; hiding it can void a claim.");
-  if (a.healthCond === "yes" || a.illness === "yes" || a.health === "poor") KEYS.forEach(k => S[k].watch.push("Your health answers mean the insurer will likely ask for medical tests and may increase the premium or limit the cover."));
+  if (a.healthCond === "yes") KEYS.forEach(k => S[k].watch.push("Your health answers mean the insurer will likely ask for medical tests and may increase the premium or limit the cover."));
   if (a.productType === "prot_invest") S.endow.watch.push("You asked for investment growth. A ULIP (not in this catalogue) is the market-linked alternative.");
 
   const out = KEYS.map(k => ({ k, ...S[k], score: Math.max(3, Math.min(97, Math.round(50 + S[k].pts * 2.5))) }));
@@ -654,7 +619,7 @@ function recommend(a) {
 /* ---------------------------------------------------------------
    6. State (kept in this browser only)
 ---------------------------------------------------------------- */
-const STORE = "suraksha-compass-v1";
+const STORE = "suraksha-compass-v2";
 let state = { a: {}, step: 0, view: "form", sample: false };
 try { const s = JSON.parse(localStorage.getItem(STORE)); if (s && s.a) state = Object.assign(state, s); else throw 0; }
 catch (e) { state = { a: JSON.parse(JSON.stringify(SAMPLE)), step: 0, view: "form", sample: true }; }
@@ -711,11 +676,10 @@ function questionHTML(q) {
       <div class="seg" role="group" aria-label="Income period"><button type="button" id="q-income-monthly" data-period="monthly" aria-pressed="${v.period !== "annual"}">Per month</button><button type="button" id="q-income-annual" data-period="annual" aria-pressed="${v.period === "annual"}">Per year</button></div></div>
       <div class="words" id="w-income">${yearly ? `= ${inrShort(yearly)} per year` : ""}</div></div></div>`;
   }
-  const isCount = q.type === "count";
   const v = state.a[q.id];
   return `<div class="q">${num}<div><label class="qlabel" for="q-${q.id}">${esc(q.label)}</label>${hint}
-    <div class="money"><div class="field" style="${isCount ? "width:120px" : ""}">${isCount ? "" : "<b>₹</b>"}<input id="q-${q.id}" inputmode="numeric" autocomplete="off" placeholder="${isCount ? "1" : "e.g. 10,00,000"}" value="${v ? Number(v).toLocaleString("en-IN") : ""}" data-${isCount ? "count" : "money"}="${q.id}"></div></div>
-    ${isCount ? "" : `<div class="words" id="w-${q.id}">${moneyWords(v)}</div>`}</div></div>`;
+    <div class="money"><div class="field"><b>₹</b><input id="q-${q.id}" inputmode="numeric" autocomplete="off" placeholder="e.g. 10,00,000" value="${v ? Number(v).toLocaleString("en-IN") : ""}" data-money="${q.id}"></div></div>
+    <div class="words" id="w-${q.id}">${moneyWords(v)}</div></div></div>`;
 }
 
 function renderForm() {
@@ -768,9 +732,6 @@ function renderReport() {
     : `${POLICIES[R.primary].name} matches your profile best.`;
 
   const totalPrem = R.alloc.reduce((s, x) => s + x.prem, 0);
-  const freqDiv = { monthly: 12, quarterly: 4, half: 2 }[a.payFreq];
-  const freqLoad = { monthly: 1.04, quarterly: 1.03, half: 1.02 }[a.payFreq] || 1;
-  const freqLabel = { monthly: "per month", quarterly: "per quarter", half: "every six months" }[a.payFreq];
   const colors = { term: "var(--accent)", endow: "var(--marigold)", moneyback: "var(--marigold)", whole: "var(--marigold)" };
   const budget = R.budget;
 
@@ -782,8 +743,8 @@ function renderReport() {
 
   const riders = [
     { n: "Accidental death benefit", on: a.occupation !== "retired", d: "Pays an extra sum if death is caused by an accident. Very low cost." },
-    { n: "Critical illness", on: a.familyHistory === "yes" || a.illness === "yes" || a.age === "36_45" || a.age === "46_55", d: "Pays a lump sum on diagnosis of listed illnesses such as cancer or heart attack." },
-    { n: "Waiver of premium", on: a.hasKids === "yes" || R.combo.some(k => k !== "term"), d: "Future premiums are waived on disability or critical illness, so the policy continues." },
+    { n: "Critical illness", on: a.healthCond === "yes" || a.age === "36_45" || a.age === "46_55", d: "Pays a lump sum on diagnosis of listed illnesses such as cancer or heart attack." },
+    { n: "Waiver of premium", on: kidsNum(a) > 0 || R.combo.some(k => k !== "term"), d: "Future premiums are waived on disability or critical illness, so the policy continues." },
     { n: "Monthly income payout", on: depNum(a) >= 2, d: "Pays the claim partly as monthly income, so your family has a steady replacement salary." }
   ];
 
@@ -793,8 +754,8 @@ function renderReport() {
     "Use the 30-day free-look period to read the policy document; you can return it for a refund if it does not suit you.",
     "Add a nominee (and consider the Married Women's Property Act, 1874 option so the payout goes only to your spouse and children).",
     "For savings plans, read the benefit illustration at 4% and 8% and check the guaranteed surrender value.",
-    a.healthIns !== "yes" ? "Buy a separate health insurance policy. Life insurance does not cover hospital bills, and employer cover ends when you change jobs." : null
-  ].filter(Boolean);
+    "If you don't have your own health insurance, buy it separately. Life insurance does not cover hospital bills, and employer cover ends when you change jobs."
+  ];
 
   const planCards = R.ranked.map(r => {
     const p = POLICIES[r.k], isPick = R.combo.includes(r.k);
@@ -832,7 +793,7 @@ function renderReport() {
         <div class="row"><span>Cover until age</span><b>${Math.min(85, age + yrs)}</b></div>
         <div class="row"><span>Your budget</span><b>${budget ? "~" + inr(budget) + "/yr" : "—"}</b></div>
         <div class="row"><span>Suggested plan costs</span><b>${totalPrem ? "~" + inr(totalPrem) + "/yr" : "—"}</b></div>
-        ${freqDiv && totalPrem ? `<div class="row"><span>Paid ${freqLabel}</span><b>~${inr(totalPrem * freqLoad / freqDiv)}</b></div>` : ""}
+        ${totalPrem ? `<div class="row"><span>If paid monthly</span><b>~${inr(totalPrem * 1.04 / 12)}</b></div>` : ""}
       </div>
     </section>
 
@@ -851,7 +812,7 @@ function renderReport() {
         <div class="tbl-wrap"><table style="margin-top:12px"><thead><tr><th>Policy</th><th class="r">Sum assured</th><th class="r">Premium / yr</th></tr></thead><tbody>
         ${R.alloc.map(x => `<tr><td>${POLICIES[x.k].name}${x.k === "term" ? ` <span class="small">(${yrs} yrs)</span>` : ` <span class="small">(${rate.T} yrs)</span>`}</td><td class="r">${x.sa ? inrShort(x.sa) : "—"}</td><td class="r">${x.prem ? inr(x.prem) : "—"}</td></tr>`).join("")}
         </tbody></table></div>
-        <p class="small" style="margin-top:10px">Indicative market-typical premiums, adjusted for your age band${a.gender === "female" ? ", gender" : ""}${a.tobacco === "yes" ? ", tobacco use" : ""} and health answers. Not a quote.</p>
+        <p class="small" style="margin-top:10px">Indicative market-typical premiums, adjusted for your age band${a.tobacco === "yes" ? ", tobacco use" : ""} and health answers. Not a quote.</p>
       </section>
     </div>
 
@@ -888,7 +849,7 @@ function renderReport() {
       <section class="card">
         <h2>Before you buy</h2>
         <ol class="checklist">${checklist.map(c => `<li>${esc(c)}</li>`).join("")}</ol>
-        ${a.tax !== "no" ? `<p class="small" style="margin-top:12px">Tax: premiums qualify for deduction up to ₹1.5 lakh under Section 80C only in the old tax regime. Maturity proceeds are exempt under Section 10(10D) when premium stays within 10% of sum assured; for non-ULIP policies issued from 1 April 2023, proceeds are taxable if total annual premium exceeds ₹5 lakh. Death benefits are tax-free. Confirm with a tax adviser.</p>` : ""}
+        <p class="small" style="margin-top:12px">Tax: premiums qualify for deduction up to ₹1.5 lakh under Section 80C only in the old tax regime. Maturity proceeds are exempt under Section 10(10D) when premium stays within 10% of sum assured; for non-ULIP policies issued from 1 April 2023, proceeds are taxable if total annual premium exceeds ₹5 lakh. Death benefits are tax-free. Confirm with a tax adviser.</p>
       </section>
     </div>
 
@@ -897,7 +858,7 @@ function renderReport() {
       <p class="small">From the <a href="https://data.worldbank.org/country/india" target="_blank" rel="noopener">World Bank Open Data</a> API for India (CC BY 4.0), ${D.mode === "live" ? "fetched live just now" : `snapshot from ${D.fetched} (live fetch unavailable here)`}.</p>
       <div class="tbl-wrap"><table class="data-tbl"><tbody>
         <tr><td>Consumer price inflation, average ${D.inflation.from}–${D.inflation.to} (FP.CPI.TOTL.ZG)</td><td class="r">${pct(D.inflation.v)}</td><td>Grows future costs and income</td></tr>
-        <tr><td>Life expectancy at birth${a.gender === "male" ? ", male" : a.gender === "female" ? ", female" : ""}, ${le.y} (SP.DYN.LE00${a.gender === "male" ? ".MA" : a.gender === "female" ? ".FE" : ""}.IN)</td><td class="r">${le.v.toFixed(1)} yrs</td><td>Compared with when term cover ends</td></tr>
+        <tr><td>Life expectancy at birth, ${le.y} (SP.DYN.LE00.IN)</td><td class="r">${le.v.toFixed(1)} yrs</td><td>Compared with when term cover ends</td></tr>
         <tr><td>Bank lending rate, ${D.lending.y} (FR.INR.LEND)</td><td class="r">${pct(D.lending.v)}</td><td>Context for the ${pct(ASSUMED_RETURN * 100)} assumed return</td></tr>
         <tr><td>Education cost inflation (CPI + ${EDU_PREMIUM * 100} points, assumption)</td><td class="r">${pct(D.inflation.v + EDU_PREMIUM * 100)}</td><td>Grows children's education costs</td></tr>
       </tbody></table></div>
@@ -929,14 +890,14 @@ document.addEventListener("change", e => {
 
 document.addEventListener("input", e => {
   const t = e.target;
-  const key = t.dataset.money || t.dataset.count;
+  const key = t.dataset.money;
   if (!key) return;
   const n = parseNum(t.value);
   update(() => {
     if (key === "income") state.a.income = { amount: n, period: (state.a.income && state.a.income.period) || "monthly" };
     else state.a[key] = n;
   });
-  if (t.dataset.money) {
+  {
     const caret = t.value.length - t.selectionStart;
     t.value = n ? n.toLocaleString("en-IN") : "";
     try { t.setSelectionRange(t.value.length - caret, t.value.length - caret); } catch (_) {}

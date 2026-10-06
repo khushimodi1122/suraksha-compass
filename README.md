@@ -1,6 +1,6 @@
 # Suraksha Compass
 
-A cross-platform web app that suggests a life insurance policy type to customers in India, based on a 37-question profile. All amounts are in INR with Indian grouping (₹12,00,000, lakh and crore).
+A cross-platform web app that suggests a life insurance policy type to customers in India, based on a 20-question profile. All amounts are in INR with Indian grouping (₹12,00,000, lakh and crore).
 
 **Live site:** https://khushimodi1122.github.io/suraksha-compass/
 
@@ -16,7 +16,7 @@ Then open http://localhost:8765. Opening `index.html` directly also works.
 
 ## What it does
 
-1. **Questionnaire, 7 sections.** It has all 30 questions from the brief, plus 7 added ones: city tier, existing savings/investments, family medical history, health insurance, planned retirement age, tax-saving preference and premium payment mode. Follow-up questions such as "how much cover" and "loan type" only appear when they apply. Answers are stored in the browser's `localStorage`.
+1. **Questionnaire, 4 sections, 20 questions.** It covers the questions that change the recommendation or the cover estimate: age, occupation, income and its stability, health and tobacco, dependents, children, family responsibilities, existing cover, loans, goals, risk appetite, duration, budget and premium preference. Follow-up questions (cover amount, loan amount and whether the family could repay it) only appear when they apply. Answers are stored in the browser's `localStorage`.
 2. **Live suggestion panel.** Fit scores for the four policies update as the customer answers.
 3. **Report.**
    - The suggested policy, or a combination such as Term + Endowment.
@@ -52,7 +52,7 @@ Other open Indian sources worth adding later:
   - 7% return on the payout.
   - Education inflation = CPI + 4 points.
   - The family needs 70% of the income replaced until retirement.
-- **City-tier costs:** education, marriage and parent-support costs vary by city tier (`COSTS`).
+- **Defaults for questions not asked:** retirement at 60 (`RETIRE_AGE`), and education, marriage and parent-support costs for a tier-2 city (`COSTS`).
 - **Premium tables:** `TERM_RATE` and `WHOLE_RATE`, and the endowment and money-back factors, are market-typical approximations. They are not quotes.
 - **Health answers:** these only adjust indicative premiums and suggest riders. They never decide eligibility. The app says clearly that the insurer's underwriting decides.
 
