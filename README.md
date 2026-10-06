@@ -16,7 +16,7 @@ Then open http://localhost:8765. Opening `index.html` directly also works.
 
 ## What it does
 
-1. **Questionnaire, 7 sections.** It has all 30 questions from the brief, plus 7 added ones (marked "Added" in the UI): city tier, existing savings/investments, family medical history, health insurance, planned retirement age, tax-saving preference and premium payment mode. Follow-up questions such as "how much cover" and "loan type" only appear when they apply. Answers are stored in the browser's `localStorage`.
+1. **Questionnaire, 7 sections.** It has all 30 questions from the brief, plus 7 added ones: city tier, existing savings/investments, family medical history, health insurance, planned retirement age, tax-saving preference and premium payment mode. Follow-up questions such as "how much cover" and "loan type" only appear when they apply. Answers are stored in the browser's `localStorage`.
 2. **Live suggestion panel.** Fit scores for the four policies update as the customer answers.
 3. **Report.**
    - The suggested policy, or a combination such as Term + Endowment.
